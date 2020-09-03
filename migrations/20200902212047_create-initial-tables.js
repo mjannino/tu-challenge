@@ -6,12 +6,15 @@ exports.up = function(knex) {
     tbl.float("value2").notNullable()
     tbl.boolean("value3").notNullable()
     /**
-     * You can create both of these with table.timestamps(true, true)
-     * adhering more closely to the actual data
-     * but the name requirements necessitate these be created individually
+     * This creates two columns:
+     * created_at
+     * updated_at
+     * 
+     * They are different than the challenge's spec of 
+     * creationDate and lastModificationDate
+     * but those can be user-facing names
      */
-    tbl.date("creationDate").notNullable()
-    tbl.date("lastModificationDate").notNullable()
+    table.timestamps(true, true)
   })
 };
 
