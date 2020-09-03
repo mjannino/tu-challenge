@@ -6,7 +6,6 @@ const port = process.env.port || 5000
 let app = express()
 
 app.use(bodyParser.json())
-
 app.listen(port, ()=>{
     console.log(`Listening on port ${port}`)
 })

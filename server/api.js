@@ -1,30 +1,74 @@
 const express = require('express')
 const api = express.Router()
+const { tuRequestSchema } = require('./dal/tuRequestSchema')
+const dal = require("./dal/tuRecord")
 
+function validateTuRequestBody(req, res){
+    try { 
+        tuRequestSchema.validate(req.body, itemSchema, {"throwError": true});
+    } catch(error) { 
+        res.status(401).end("Invalid body format: " + error.message); 
+    }
+}
 
-router.get('/list', (req, res) => {
-    res.send('GET All records')
+/**
+ * Generalized router-specific middleware
+ * validates we are getting a json request
+ * and does extra validation on the request body
+ * if there is a body, as all bodies are the
+ * same spec for this route [MJ]
+ */
+api.use(function (req, res, next) {
+    if(req.get("Content-Type") != "application/json") { 
+        res.status(401).send("Invalid header format"); 
+    }
+    if(req.body){
+        validateTuRequestBody(req, res)
+    }
+    next()
 })
 
-router.get('/read/:recordId', (req, res) => {
-    res.send('GET one single record')
+api.get('/list', (req, res) => {
+    result = dal.getAllTuRecords()
+    console.log(result)
+    res.send(result)
 })
 
-router.post('/create', (req, res) => {
+api.get('/read/:recordId', (req, res) => {
+    let { recordId } = req.params
+})
+
+api.post('/create', (req, res) => {
     res.send('POST to create a record')
 })
 
-router.put('/modify/:recordId', (req, res) => {
+api.put('/modify/:recordId', (req, res) => {
+    let { recordId } = req.params
     res.send('PUT to modify a record')
 })
 
-router.delete('/remove/:recordId', (req, res) => {
+api.delete('/remove/:recordId', (req, res) => {
+    let { recordId } = req.params
     res.send('DELETE to delete a record')
 })
 
 
 module.exports = api
 
+/**
+ * 
+
+if(req.get("Content-Type")!="application/json") { 
+    res.status(401).send("Invalid header format"); 
+    return;
+}
+try { 
+    validator.validate(req.body,itemSchema, "throwError":true});
+} catch(error) { 
+    res.status(401).end("Invalid body format: " + error.message); 
+    return;
+}
+ */
 
 /**
  * 
@@ -45,3 +89,14 @@ module.exports = api
 "value3": value3
 }
   */
+
+  /**
+   * RESPONSE:
+   * 
+    the unique ID (default name generally defined by the DB)
+    the timestamp : timestamp
+    the value 1 provided during the creation of the record
+    the value 2 provided during the creation of the record
+    the value 3 provided during the creation of the record
+
+   */

@@ -8,5 +8,11 @@ module.exports = {
       filename: './data/dev.sqlite3'
     }
   },
+  
+  test: {
+    client: "sqlite3",
+    connection: ":memory:",
+  },
+
   useNullAsDefault: true,
 };
