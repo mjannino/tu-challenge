@@ -14,7 +14,7 @@ function validateTuRequestBody(req, res){
     try { 
         tuRequestValidator.validate(req.body, tuRequestSchema, {"throwError": true});
     } catch(error) { 
-        res.status(401).end("Invalid body format: " + error.message); 
+        res.status(401).end("Invalid body format: " + error.message)
     }
 }
 
@@ -44,41 +44,97 @@ api.use(function (req, res, next) {
 })
 
 api.get('/list', async (req, res) => {
-    let allRecs = await dal.getAllTuRecords()
+    let allRecs
+    try{
+        allRecs = await dal.getAllTuRecords()
+    }catch (error){
+        res.status(400).end("Database error: " + error.message)
+        return
+    }
+    
     let hasRecs = !isEmpty(allRecs)
     if(hasRecs){
         allRecs = allRecs.map(x => dal.tuRecordToResponse(x))
         res.send(allRecs)
-        return;
+        return
     }else{
         res.send({"message":"There are no tuRecords to return."})
-        return;
+        return
     }
 })
 
 api.get('/read/:recordId', async (req, res) => {
     let { recordId } = req.params
-    let record = await dal.getTuRecordById(recordId)
+    let record
+    try{
+        record = await dal.getTuRecordById(recordId)
+        if(!record){
+            res.send({"message": `No record found with ID of ${recordId}`})
+            return;
+        }
+    }catch (error){
+        res.status(400).end("Database error: " + error.message)
+        return
+    }
+    
     record = dal.tuRecordToResponse(record)
     res.send(record)
 })
 
 api.post('/create', async (req, res) => {
     let transformedBody = dal.tuRequestToRecord(req.body)
-    let recordId = await dal.createTuRecord(transformedBody)
-    let record = await dal.getTuRecordById(recordId)
+    let recordId, record
+    try{
+        recordId = await dal.createTuRecord(transformedBody)
+        record = await dal.getTuRecordById(recordId)
+    }catch (error){
+        res.status(400).end(error.message)
+        return
+    }
     record = dal.tuRecordToResponse(record)
     res.send(record)
 })
 
 api.put('/modify/:recordId', async (req, res) => {
     let { recordId } = req.params
-    res.send('PUT to modify a record')
+    let transformedBody = dal.tuRequestToRecord(req.body)
+    let record
+    try{
+        record = await dal.getTuRecordById(recordId)
+        if(!record){
+            res.send({"message": `No record found with ID of ${recordId}`})
+            return;
+        }
+        // There are ways with Knex to return the record, but they're 
+        // not common and difficult with sqlite3, the database
+        // i chose for this exercise. with postgres or mysql, the additional
+        // database trip is not necessary
+        await dal.modifyTuRecord(recordId, transformedBody)
+        record = await dal.getTuRecordById(recordId)
+    }catch (error){
+        res.status(400).end(error.message)
+        return
+    }
+    record = dal.tuRecordToResponse(record)
+    res.send(record)
 })
 
 api.delete('/remove/:recordId', async (req, res) => {
     let { recordId } = req.params
-    res.send('DELETE to delete a record')
+    let record
+    try{
+        record = await dal.getTuRecordById(recordId)
+        if(!record){
+            res.send({"message": `No record found with ID of ${recordId}`})
+            return;
+        }
+        await dal.deleteTuRecord(recordId)
+    }catch (error){
+        res.status(400).end("Database error: " + error.message)
+        return
+    }
+    record = dal.tuRecordToResponse(record)
+    res.send({"message": "Record succesfully deleted", "data": record})
 })
 
 
