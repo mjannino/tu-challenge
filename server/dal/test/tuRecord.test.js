@@ -19,6 +19,8 @@ const {
     tuRequestToRecord
 } = require('../tuRecord')
 const db = require('../../db-config')
+let sanitizedBody = tuRequestToRecord(requestBody)
+let sanitizedNewBody = tuRequestToRecord(newRequestBody)
 
 beforeAll(async () => {
     console.log("Initializing and seeding test database...")
@@ -97,18 +99,20 @@ describe("tuRecord.js", () => {
     })
 
     test("createTuRecord creates a record properly", async () => {
-        let actual = await createTuRecord(requestBody)
-        let persisted = await getTuRecordById(actual._id)
+        let actual_id = await createTuRecord(sanitizedBody)
+        let actual = await getTuRecordById(actual_id)
+        let persisted = await getTuRecordById(actual_id)
 
-        expect(actual).toEqual(persisted)
+        expect(actual_id).toEqual(persisted._id)
         expect(actual.value1).toEqual(requestBody.value1)
         expect(actual.value2).toEqual(requestBody.value2)
         expect(dbBoolToBool(actual.value3)).toEqual(requestBody.value3)
     })
 
     test("modifyTuRecord modifies specified record", async () => {
-        let original = await createTuRecord(requestBody)
-        let actual = await modifyTuRecord(original._id, newRequestBody)
+        let original_id = await createTuRecord(sanitizedBody)
+        let original = await getTuRecordById(original_id)
+        let actual = await modifyTuRecord(original._id, sanitizedNewBody)
 
         expect(actual).not.toEqual(original)
         expect(actual._id).toEqual(original._id)
@@ -124,7 +128,8 @@ describe("tuRecord.js", () => {
     })
 
     test("deleteTuRecord deletes specified record only", async () => {
-        let recordToDelete = await createTuRecord(requestBody)
+        let recordIdToDelete = await createTuRecord(sanitizedBody)
+        let recordToDelete = await getTuRecordById(recordIdToDelete)
         let actual = await deleteTuRecord(recordToDelete(recordToDelete._id))
         let lookupAll = await getAllTuRecords()
 

@@ -5,11 +5,29 @@ async function getAllTuRecords(){
 }
 
 async function getTuRecordById(id){
+    if(!id) throw new Error(`Invalid ID in getTuRecordById: ${id}`)
     return await db('tu_records').where('_id', id).first()
 }
 
-async function createTuRecord(body){return}
+/**
+ * Before entering this function, sanitize @param body 
+ * Ensure the key: value mapping matches that of `tu_records`
+ */
+async function createTuRecord(body){
+    let ids = await db('tu_records').insert(body)
+    if(!ids){
+        return null
+    }else if(ids.length > 1){
+        return ids
+    }else{
+        return ids[0]
+    }
+}
 
+/**
+ * Before entering this function, sanitize @param body 
+ * Ensure the key: value mapping matches that of `tu_records`
+ */
 async function modifyTuRecord(id, body){return}
 
 async function deleteTuRecord(id){return}
