@@ -45,10 +45,20 @@ describe("tuRecord.js", () => {
 
         let dolphinRec = actual[0]
         expect(dolphinRec._id).toEqual(1)
-        expect(dolphinRec.value1).toEqual("dolphin")
-        expect(dolphinRec.value2).toEqual(2.4)
+        expect(dolphinRec.value1).toEqual(dolphin.value1)
+        expect(dolphinRec.value2).toEqual(dolphin.value2)
         expect(dolphinRec.value3).toBeTruthy()
         expect(dolphinRec.created_at).not.toBeNull()
         expect(dolphinRec.updated_at).not.toBeNull()
+    })
+
+    test("getTuRecordById gets correct record", async () => {
+        let actual = await getTuRecordById(2)
+        expect(actual._id).toEqual(2)
+        expect(actual.value1).toEqual(whale.value1)
+        expect(actual.value2).toEqual(whale.value2)
+        expect(actual.value3).toBeFalsy()
+        expect(actual.created_at).not.toBeNull()
+        expect(actual.updated_at).not.toBeNull()
     })
 })

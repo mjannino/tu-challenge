@@ -5,7 +5,7 @@ async function getAllTuRecords(){
 }
 
 async function getTuRecordById(id){
-    return await db('tu_records').where('id', id)
+    return await db('tu_records').where('_id', id).first()
 }
 
 async function createTuRecord(){return}
