@@ -131,11 +131,11 @@ describe("tuRecord.js", () => {
     test("deleteTuRecord deletes specified record only", async () => {
         let recordIdToDelete = await createTuRecord(sanitizedBody)
         let recordToDelete = await getTuRecordById(recordIdToDelete)
-        let actual = await deleteTuRecord(recordToDelete._id)
+        let numDeleted = await deleteTuRecord(recordToDelete._id)
         let lookupAll = await getAllTuRecords()
-
-        expect(lookupAll.length).not.ToEqual(0)
+        let ids = lookupAll.map(x => x._id)
+        expect(lookupAll.length).not.toBe(0)
         expect(lookupAll).not.toContain(recordToDelete)
-        expect(actual).toEqual(recordToDelete._id)
+        expect(ids).not.toContain(recordIdToDelete)
     })
 })

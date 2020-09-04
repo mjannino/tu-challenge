@@ -23,11 +23,16 @@ async function createTuRecord(body){
  * Ensure the key: value mapping matches that of `tu_records`
  */
 async function modifyTuRecord(id, body){
+    if(!id) throw new Error(`Invalid ID in modifyTuRecord: ${id}`)
     let numUpdated = await db('tu_records').where('_id', id).update(body)
     return returnRecords(numUpdated)
 }
 
-async function deleteTuRecord(id){return}
+async function deleteTuRecord(id){
+    if(!id) throw new Error(`Invalid ID in deleteTuRecord: ${id}`)
+    let deleted = await db('tu_records').where('_id', id).del()
+    return returnRecords(deleted)
+}
 
 function returnRecords(records){
     if(!records){
