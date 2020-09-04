@@ -7,5 +7,7 @@ The coding challenge was assigned by a company I've abbreviated with a non-speci
 ### How to get this working:
 1. Create a .env file from the .env.example file.
 2. `npm install`
-3. `npx knex migrate:latest`
+3. `npx knex migrate:latest` & `npx knex seed:run`
 4. `npm run start`
+
+`npm run test` to run test suite

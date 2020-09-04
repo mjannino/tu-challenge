@@ -23,10 +23,10 @@ const tuRequestSchema = {
             "type":"string"
         },  
         "value2": {   
-            "type": "float"
+            "type": "number"
         },  
         "value3": {
-            "type": "bool"
+            "type": "boolean"
         }
     }, 
     "required" :[
@@ -34,7 +34,8 @@ const tuRequestSchema = {
         "value1",
         "value2",
         "value3"
-    ]
+    ],
+    "additionalProperties": false
 };
 
 const tuRequestValidator = new validator();

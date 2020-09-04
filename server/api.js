@@ -4,8 +4,12 @@ const {
     tuRequestSchema,
     tuRequestValidator
 } = require('./dal/tuRequestSchema')
-const dal = require("./dal/tuRecord")
+const dal = require("./dal/tuRecord");
+const { createTuRecord } = require('./dal/tuRecord');
 
+/**
+ * Use `jsonschema` to validate the shape and type of incoming body data
+ */
 function validateTuRequestBody(req, res){
     try { 
         tuRequestValidator.validate(req.body, tuRequestSchema, {"throwError": true});
@@ -30,9 +34,10 @@ function isEmpty(obj){
  */
 api.use(function (req, res, next) {
     if(req.get("Content-Type") != "application/json") { 
-        res.status(401).send("Invalid header format"); 
+        res.status(401).send("Invalid header format, expected application/json"); 
     }
     if(req.method == "POST" || req.method == "PUT"){
+        console.log("Validating request body...")
         validateTuRequestBody(req, res)
     }
     next()
@@ -59,7 +64,11 @@ api.get('/read/:recordId', async (req, res) => {
 })
 
 api.post('/create', async (req, res) => {
-    res.send('POST to create a record')
+    let transformedBody = dal.tuRequestToRecord(req.body)
+    let recordId = await dal.createTuRecord(transformedBody)
+    let record = await dal.getTuRecordById(recordId)
+    record = dal.tuRecordToResponse(record)
+    res.send(record)
 })
 
 api.put('/modify/:recordId', async (req, res) => {
