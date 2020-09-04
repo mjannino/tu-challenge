@@ -112,7 +112,8 @@ describe("tuRecord.js", () => {
     test("modifyTuRecord modifies specified record", async () => {
         let original_id = await createTuRecord(sanitizedBody)
         let original = await getTuRecordById(original_id)
-        let actual = await modifyTuRecord(original._id, sanitizedNewBody)
+        let num_updated = await modifyTuRecord(original_id, sanitizedNewBody)
+        let actual = await getTuRecordById(original_id)
 
         expect(actual).not.toEqual(original)
         expect(actual._id).toEqual(original._id)
@@ -130,7 +131,7 @@ describe("tuRecord.js", () => {
     test("deleteTuRecord deletes specified record only", async () => {
         let recordIdToDelete = await createTuRecord(sanitizedBody)
         let recordToDelete = await getTuRecordById(recordIdToDelete)
-        let actual = await deleteTuRecord(recordToDelete(recordToDelete._id))
+        let actual = await deleteTuRecord(recordToDelete._id)
         let lookupAll = await getAllTuRecords()
 
         expect(lookupAll.length).not.ToEqual(0)

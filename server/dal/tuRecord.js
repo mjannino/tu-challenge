@@ -15,22 +15,31 @@ async function getTuRecordById(id){
  */
 async function createTuRecord(body){
     let ids = await db('tu_records').insert(body)
-    if(!ids){
-        return null
-    }else if(ids.length > 1){
-        return ids
-    }else{
-        return ids[0]
-    }
+    return returnRecords(ids)
 }
 
 /**
  * Before entering this function, sanitize @param body 
  * Ensure the key: value mapping matches that of `tu_records`
  */
-async function modifyTuRecord(id, body){return}
+async function modifyTuRecord(id, body){
+    let numUpdated = await db('tu_records').where('_id', id).update(body)
+    return returnRecords(numUpdated)
+}
 
 async function deleteTuRecord(id){return}
+
+function returnRecords(records){
+    if(!records){
+        return null
+    }else if(records.length > 1){
+        return records
+    }else if(records.length == 1){
+        return records[0]
+    }else{
+        return records
+    }
+}
 
 function dbBoolToBool(x){
     return !x ? false : true
