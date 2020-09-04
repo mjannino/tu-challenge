@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon app.js",
     "test": "jest server",
-    "heroku-postbuild": "npx knex migrate:latest && npx knex seed:run"
+    "heroku-postbuild": "mkdir data && npx knex migrate:latest && npx knex seed:run"
   },
   "repository": {
     "type": "git",

@@ -8,6 +8,13 @@ module.exports = {
       filename: './data/dev.sqlite3'
     }
   },
+
+  production: {
+    client: 'sqlite3',
+    connection: {
+      filename: './data/dev.sqlite3'
+    }  
+  },
   
   test: {
     client: "sqlite3",
