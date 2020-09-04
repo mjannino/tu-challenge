@@ -2,12 +2,12 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const api = require("./server/api")
 
-const port = process.env.port || 5000
+const PORT = process.env.PORT || 5000
 let app = express()
 
 app.use(bodyParser.json())
-app.listen(port, ()=>{
-    console.log(`Listening on port ${port}`)
+app.listen(PORT, ()=>{
+    console.log(`Listening on port ${PORT}`)
 })
 
 app.get('/', (req, res) => {
