@@ -12,7 +12,9 @@ const {
     createTuRecord,
     modifyTuRecord,
     deleteTuRecord,
-    dbBoolToBool
+    dbBoolToBool,
+    tuRecordToResponse,
+    tuRequestToRecord
 } = require('../tuRecord')
 const db = require('../../db-config')
 
@@ -39,6 +41,43 @@ describe("tuRecord.js", () => {
         expect(trueResult).toEqual(true)
     })
 
+    test("tuRequestToRecord strips timestamp and packages keys neatly", () => {
+        let requestBody = {
+            "timestamp": (new Date()).getTime(),
+            "value1": "stringItem",
+            "value2": 2.4,
+            "value3": true
+        }
+
+        let actual = tuRequestToRecord(requestBody)
+        expect(actual.timestamp === undefined).toBeTruthy()
+    })
+
+    test("tuRecordToResponse packages tuRecord as spec'ed response object", () => {
+        let record = {
+            _id: 2,
+            value1: 'whale',
+            value2: 4.2,
+            value3: 0,
+            created_at: '2020-09-04 01:13:25',
+            updated_at: '2020-09-04 01:13:25'
+        }
+        let expected = {
+            "id": 2,
+            "timestamp": (new Date()).getTime(),
+            "value1": "whale",
+            "value2": 4.2,
+            "value3": false
+        }
+        let actual = tuRecordToResponse(record)
+        expect(actual.id).toEqual(expected.id)
+        expect(actual.timestamp >= expected.timestamp).toBeTruthy()
+        expect(actual.value1).toEqual(expected.value1)
+        expect(actual.value2).toEqual(expected.value2)
+        expect(actual.value3).toEqual(expected.value3)
+
+    })
+
     test("getAllTuRecords returns all records", async () => {
         let actual = await getAllTuRecords()
         expect(actual.length).toEqual(3)
@@ -60,5 +99,9 @@ describe("tuRecord.js", () => {
         expect(actual.value3).toBeFalsy()
         expect(actual.created_at).not.toBeNull()
         expect(actual.updated_at).not.toBeNull()
+    })
+
+    test("createTueRecord creates a record properly", async () => {
+        expect(true).toBeTruthy() 
     })
 })
