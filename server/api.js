@@ -1,11 +1,14 @@
 const express = require('express')
 const api = express.Router()
-const { tuRequestSchema } = require('./dal/tuRequestSchema')
+const {
+    tuRequestSchema,
+    tuRequestValidator
+} = require('./dal/tuRequestSchema')
 const dal = require("./dal/tuRecord")
 
 function validateTuRequestBody(req, res){
     try { 
-        tuRequestSchema.validate(req.body, itemSchema, {"throwError": true});
+        tuRequestValidator.validate(req.body, tuRequestSchema, {"throwError": true});
     } catch(error) { 
         res.status(401).end("Invalid body format: " + error.message); 
     }
@@ -19,23 +22,26 @@ function validateTuRequestBody(req, res){
  * same spec for this route [MJ]
  */
 api.use(function (req, res, next) {
-    if(req.get("Content-Type") != "application/json") { 
-        res.status(401).send("Invalid header format"); 
-    }
-    if(req.body){
+    // if(req.get("Content-Type") != "application/json") { 
+    //     res.status(401).send("Invalid header format"); 
+    // }
+    if(req.method == "POST" || req.method == "PUT"){
         validateTuRequestBody(req, res)
     }
     next()
 })
 
 api.get('/list', (req, res) => {
-    result = dal.getAllTuRecords()
-    console.log(result)
-    res.send(result)
+    let allRecs = dal.getAllTuRecords()
+    // allRecs = allRecs.map(x => dal.tuRecordToResponse(x))
+    res.send(allRecs)
 })
 
 api.get('/read/:recordId', (req, res) => {
     let { recordId } = req.params
+    let record = dal.getTuRecordById(recordId)
+    record = dal.tuRecordToResponse(record)
+    res.send(record)
 })
 
 api.post('/create', (req, res) => {

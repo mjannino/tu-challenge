@@ -10,9 +10,9 @@
 // tbl.date("creationDate").notNullable()
 // tbl.date("lastModificationDate").notNullable()
 
-const { jsonValidator } = require("jsonschema")
+const validator = require("jsonschema").Validator
 
-const tuRequestSchemaJSON = { 
+const tuRequestSchema = { 
     "id":"tuRequest", 
     "type":"object", 
     "properties":{  
@@ -37,9 +37,10 @@ const tuRequestSchemaJSON = {
     ]
 };
 
-const tuRequestSchema = new jsonValidator();
-tuRequestSchema.addSchema(tuRequestSchemaJSON, "tuRequest");
+const tuRequestValidator = new validator();
+tuRequestValidator.addSchema(tuRequestSchema, "tuRequest");
 
 module.exports = {
-    tuRecordSchema
+    tuRequestSchema,
+    tuRequestValidator
 }
