@@ -1,29 +1,28 @@
-const dbConfig = require(".../knexfile.js")
-const { db } = require('../db-config')
+const db = require('../db-config')
 
 async function getAllTuRecords(){
-    let allRecords = await db.select().table('tu_records')
-    console.log(allRecords)
-    return allRecords
+    return await db.select().table('tu_records')
 }
 
 async function getTuRecordById(id){
-    let tuRecord = await db('tu_records').where('id', id)
-    console.log(tuRecord)
-    return tuRecord
+    return await db('tu_records').where('id', id)
 }
 
-function createTuRecord(){return}
+async function createTuRecord(){return}
 
-function modifyTuRecord(){return}
+async function modifyTuRecord(){return}
 
-function deleteTuRecord(){return}
+async function deleteTuRecord(){return}
 
+function dbBoolToBool(x){
+    return !x ? false : true
+}
 
 module.exports = {
     getAllTuRecords,
     getTuRecordById,
     createTuRecord,
     modifyTuRecord,
-    deleteTuRecord
+    deleteTuRecord,
+    dbBoolToBool
 }

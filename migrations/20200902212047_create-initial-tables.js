@@ -14,7 +14,7 @@ exports.up = function(knex) {
      * creationDate and lastModificationDate
      * but those can be user-facing names
      */
-    table.timestamps(true, true)
+    tbl.timestamps(true, true)
   })
 };
 
