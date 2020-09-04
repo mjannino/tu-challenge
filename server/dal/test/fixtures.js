@@ -19,6 +19,20 @@ const orca = {
     value3: true,
 }
 
+const requestBody = {
+    "timestamp": (new Date()).getTime(),
+    "value1": "requestItem",
+    "value2": 2.5,
+    "value3": true
+}
+
+const newRequestBody = {
+    "timestamp": (new Date()).getTime(),
+    "value1": "changedItem",
+    "value2": 3.5,
+    "value3": false 
+}
+
 async function migrateTestDb(db){
     await db.migrate.latest()
     await db('tu_records').truncate()
@@ -40,5 +54,7 @@ module.exports = {
     cleanUpTuRecords,
     dolphin,
     whale,
-    orca
+    orca,
+    requestBody,
+    newRequestBody
 }

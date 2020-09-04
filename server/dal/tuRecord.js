@@ -8,11 +8,11 @@ async function getTuRecordById(id){
     return await db('tu_records').where('_id', id).first()
 }
 
-async function createTuRecord(){return}
+async function createTuRecord(body){return}
 
-async function modifyTuRecord(){return}
+async function modifyTuRecord(id, body){return}
 
-async function deleteTuRecord(){return}
+async function deleteTuRecord(id){return}
 
 function dbBoolToBool(x){
     return !x ? false : true

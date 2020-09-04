@@ -4,7 +4,9 @@ const {
     cleanUpTuRecords,
     dolphin,
     whale,
-    orca
+    orca,
+    requestBody,
+    newRequestBody
 } = require('./fixtures')
 const {
     getAllTuRecords,
@@ -42,13 +44,6 @@ describe("tuRecord.js", () => {
     })
 
     test("tuRequestToRecord strips timestamp and packages keys neatly", () => {
-        let requestBody = {
-            "timestamp": (new Date()).getTime(),
-            "value1": "stringItem",
-            "value2": 2.4,
-            "value3": true
-        }
-
         let actual = tuRequestToRecord(requestBody)
         expect(actual.timestamp === undefined).toBeTruthy()
     })
@@ -101,7 +96,40 @@ describe("tuRecord.js", () => {
         expect(actual.updated_at).not.toBeNull()
     })
 
-    test("createTueRecord creates a record properly", async () => {
-        expect(true).toBeTruthy() 
+    test("createTuRecord creates a record properly", async () => {
+        let actual = await createTuRecord(requestBody)
+        let persisted = await getTuRecordById(actual._id)
+
+        expect(actual).toEqual(persisted)
+        expect(actual.value1).toEqual(requestBody.value1)
+        expect(actual.value2).toEqual(requestBody.value2)
+        expect(dbBoolToBool(actual.value3)).toEqual(requestBody.value3)
+    })
+
+    test("modifyTuRecord modifies specified record", async () => {
+        let original = await createTuRecord(requestBody)
+        let actual = await modifyTuRecord(original._id, newRequestBody)
+
+        expect(actual).not.toEqual(original)
+        expect(actual._id).toEqual(original._id)
+
+        expect(actual.value1).toEqual(newRequestBody.value1)
+        expect(actual.value1).not.toEqual(original.value1)
+
+        expect(actual.value2).toEqual(newRequestBody.value2)
+        expect(actual.value2).not.toEqual(original.value2)
+
+        expect(dbBoolToBool(actual.value3)).toEqual(newRequestBody.value3)
+        expect(dbBoolToBool(actual.value3)).not.toEqual(original.value3)
+    })
+
+    test("deleteTuRecord deletes specified record only", async () => {
+        let recordToDelete = await createTuRecord(requestBody)
+        let actual = await deleteTuRecord(recordToDelete(recordToDelete._id))
+        let lookupAll = await getAllTuRecords()
+
+        expect(lookupAll.length).not.ToEqual(0)
+        expect(lookupAll).not.toContain(recordToDelete)
+        expect(actual).toEqual(recordToDelete._id)
     })
 })
