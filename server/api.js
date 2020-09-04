@@ -14,6 +14,13 @@ function validateTuRequestBody(req, res){
     }
 }
 
+function isEmpty(obj){
+    if(Object.keys(obj).length === 0){
+        return true
+    }
+    return false
+}
+
 /**
  * Generalized router-specific middleware
  * validates we are getting a json request
@@ -22,38 +29,45 @@ function validateTuRequestBody(req, res){
  * same spec for this route [MJ]
  */
 api.use(function (req, res, next) {
-    // if(req.get("Content-Type") != "application/json") { 
-    //     res.status(401).send("Invalid header format"); 
-    // }
+    if(req.get("Content-Type") != "application/json") { 
+        res.status(401).send("Invalid header format"); 
+    }
     if(req.method == "POST" || req.method == "PUT"){
         validateTuRequestBody(req, res)
     }
     next()
 })
 
-api.get('/list', (req, res) => {
-    let allRecs = dal.getAllTuRecords()
-    // allRecs = allRecs.map(x => dal.tuRecordToResponse(x))
-    res.send(allRecs)
+api.get('/list', async (req, res) => {
+    let allRecs = await dal.getAllTuRecords()
+    let hasRecs = !isEmpty(allRecs)
+    if(hasRecs){
+        allRecs = allRecs.map(x => dal.tuRecordToResponse(x))
+        res.send(allRecs)
+        return;
+    }else{
+        res.send({"message":"There are no tuRecords to return."})
+        return;
+    }
 })
 
-api.get('/read/:recordId', (req, res) => {
+api.get('/read/:recordId', async (req, res) => {
     let { recordId } = req.params
-    let record = dal.getTuRecordById(recordId)
+    let record = await dal.getTuRecordById(recordId)
     record = dal.tuRecordToResponse(record)
     res.send(record)
 })
 
-api.post('/create', (req, res) => {
+api.post('/create', async (req, res) => {
     res.send('POST to create a record')
 })
 
-api.put('/modify/:recordId', (req, res) => {
+api.put('/modify/:recordId', async (req, res) => {
     let { recordId } = req.params
     res.send('PUT to modify a record')
 })
 
-api.delete('/remove/:recordId', (req, res) => {
+api.delete('/remove/:recordId', async (req, res) => {
     let { recordId } = req.params
     res.send('DELETE to delete a record')
 })
